@@ -1,4 +1,4 @@
-package com.rtrouve.picross;
+package com.rtrouve.picross.bean;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

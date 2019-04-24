@@ -1,7 +1,10 @@
-package com.rtrouve.picross;
+package com.rtrouve.picross.controller;
 
 import java.util.List;
 
+import com.rtrouve.picross.GridRepository;
+import com.rtrouve.picross.bean.Grid;
+import com.rtrouve.picross.service.GridService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,32 +16,40 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.rtrouve.picross.util.Constante.GRID_PATH;
+
 @CrossOrigin
-@RestController
+@RestController(GRID_PATH)
 public class GridController {
-	GridRepository repo;
+	private GridRepository repo;
+	private GridService gridService;
 	
 	public GridController(GridRepository repo) {
 		this.repo = repo;
 	}
 
-	@GetMapping("/grid")
+	@GetMapping("")
 	public ResponseEntity<List<Grid>> get() {
 		return new ResponseEntity<List<Grid>>(this.repo.findAll(), HttpStatus.OK);
 	}
 	
-	@GetMapping("/grid/{id}")
-	public ResponseEntity<Grid> getById(@PathVariable Long id) {
-		return new ResponseEntity<Grid>(this.repo.findById(id).get(), HttpStatus.OK);
+	@GetMapping("/{id}")
+	public ResponseEntity<Grid> getById(@PathVariable int id) {
+		try {
+			return new ResponseEntity<Grid>(gridService.getGrid(id), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>();
+		}
+		//return new ResponseEntity<Grid>(this.repo.findById(id).get(), HttpStatus.OK);
 	}
 	
-	@PostMapping("/grid")
+	@PostMapping("")
 	public ResponseEntity<Grid> create(@RequestBody Grid grid) {
 		Grid temp =  repo.save(grid);
 		return new ResponseEntity<Grid>(temp, HttpStatus.CREATED);
 	}
 	
-	@PutMapping("/grid/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<Grid> replace(@RequestBody Grid newGrid, @PathVariable Long id) {
 		return repo.findById(id)
 				.map(grid -> {
@@ -52,7 +63,7 @@ public class GridController {
 				});
 	}
 	
-	@DeleteMapping("/grid/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Grid> delete(@PathVariable Long id) {
 		repo.deleteById(id);
 		return new ResponseEntity<Grid>(HttpStatus.OK);
